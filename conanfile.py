@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from conans import ConanFile, CMake, tools
+from conans import ConanFile, tools, Meson
 import os
+import shutil
 
 
-class LibnameConan(ConanFile):
-    name = "libname"
-    version = "0.0.0"
+class GStreamerConan(ConanFile):
+    name = "gstreamer"
+    version = "1.14.4"
     description = "Keep it short"
     # topics can get used for searches, GitHub topics, Bintray tags etc. Add here keywords about the library
     topics = ("conan", "libname", "logging")
@@ -29,46 +30,62 @@ class LibnameConan(ConanFile):
     _source_subfolder = "source_subfolder"
     _build_subfolder = "build_subfolder"
 
-    requires = (
-        "OpenSSL/1.0.2p@conan/stable",
-        "zlib/1.2.11@conan/stable"
-    )
+    requires = ("glib/2.58.3@bincrafters/stable",)
+    generators = "pkg_config"
 
     def config_options(self):
         if self.settings.os == 'Windows':
             del self.options.fPIC
 
+    def build_requirements(self):
+        if not tools.which("meson"):
+            self.build_requires("meson_installer/0.49.0@bincrafters/stable")
+        if not tools.which("bison"):
+            self.build_requires("bison/3.0.5@bincrafters/stable")
+        if not tools.which("flex"):
+            self.build_requires("flex/2.6.4@bincrafters/stable")
+
     def source(self):
-        source_url = "https://github.com/libauthor/libname"
-        tools.get("{0}/archive/v{1}.tar.gz".format(source_url, self.version), sha256="Please-provide-a-checksum")
-        extracted_dir = self.name + "-" + self.version
+        self.run("git clone https://gitlab.freedesktop.org/gstreamer/gstreamer.git --branch %s --depth 1" % self.version)
+        os.rename(self.name, self._source_subfolder)
 
-        # Rename to "source_subfolder" is a convention to simplify later steps
-        os.rename(extracted_dir, self._source_subfolder)
-
-    def _configure_cmake(self):
-        cmake = CMake(self)
-        cmake.definitions["BUILD_TESTS"] = False  # example
-        cmake.configure(build_folder=self._build_subfolder)
-        return cmake
+    def _configure_meson(self):
+        glib_pc = os.path.join(self.deps_cpp_info["glib"].rootpath, "lib", "pkgconfig")
+        print(glib_pc)
+        pkg_config_paths = [glib_pc, self.source_folder]
+        meson = Meson(self)
+        defs = dict()
+        if self.settings.os == "Linux":
+            defs["libdir"] = "lib"
+        if str(self.settings.compiler) in ["gcc", "clang"]:
+            if self.settings.arch == "x86":
+                defs["c_args"] = "-m32"
+                defs["cpp_args"] = "-m32"
+                defs["c_link_args"] = "-m32"
+                defs["cpp_link_args"] = "-m32"
+            elif self.settings.arch == "x86_64":
+                defs["c_args"] = "-m64"
+                defs["cpp_args"] = "-m64"
+                defs["c_link_args"] = "-m64"
+                defs["cpp_link_args"] = "-m64"
+        meson.configure(build_folder=self._build_subfolder,
+                        source_folder=self._source_subfolder,
+                        pkg_config_paths=pkg_config_paths,
+                        defs=defs)
+        return meson
 
     def build(self):
-        cmake = self._configure_cmake()
-        cmake.build()
+        if self.settings.os == "Linux":
+            shutil.move("libmount.pc", "mount.pc")
+        shutil.move("pcre.pc", "libpcre.pc")
+        meson = self._configure_meson()
+        meson.build()
 
     def package(self):
         self.copy(pattern="LICENSE", dst="licenses", src=self._source_subfolder)
-        cmake = self._configure_cmake()
-        cmake.install()
-        # If the CMakeLists.txt has a proper install method, the steps below may be redundant
-        # If so, you can just remove the lines below
-        include_folder = os.path.join(self._source_subfolder, "include")
-        self.copy(pattern="*", dst="include", src=include_folder)
-        self.copy(pattern="*.dll", dst="bin", keep_path=False)
-        self.copy(pattern="*.lib", dst="lib", keep_path=False)
-        self.copy(pattern="*.a", dst="lib", keep_path=False)
-        self.copy(pattern="*.so*", dst="lib", keep_path=False)
-        self.copy(pattern="*.dylib", dst="lib", keep_path=False)
+        meson = self._configure_meson()
+        meson.install()
 
     def package_info(self):
-        self.cpp_info.libs = tools.collect_libs(self)
+        self.cpp_info.libs = ["gstreamer-1.0", "gstbase-1.0", "gstnet-1.0"]
+        self.cpp_info.includedirs = [os.path.join("include", "gstreamer-1.0")]
