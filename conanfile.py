@@ -9,29 +9,24 @@ import shutil
 class GStreamerConan(ConanFile):
     name = "gstreamer"
     version = "1.14.4"
-    description = "Keep it short"
-    # topics can get used for searches, GitHub topics, Bintray tags etc. Add here keywords about the library
-    topics = ("conan", "libname", "logging")
-    url = "https://github.com/bincrafters/conan-libname"
-    homepage = "https://github.com/original_author/original_lib"
+    description = "GStreamer is a development framework for creating applications like media players, video editors, streaming media broadcasters and so on"
+    topics = ("conan", "gstreamer", "multimedia", "video", "audio", "broadcasting", "framework", "media")
+    url = "https://github.com/bincrafters/conan-gstreamer"
+    homepage = "https://gstreamer.freedesktop.org/"
     author = "Bincrafters <bincrafters@gmail.com>"
-    license = "MIT"  # Indicates license type of the packaged library; please use SPDX Identifiers https://spdx.org/licenses/
-    exports = ["LICENSE.md"]      # Packages the license for the conanfile.py
-    # Remove following lines if the target lib does not use cmake.
-    exports_sources = ["CMakeLists.txt"]
-    generators = "cmake"
-
-    # Options may need to change depending on the packaged library.
+    license = "GPL-2.0-only"
+    exports = ["LICENSE.md"]
     settings = "os", "arch", "compiler", "build_type"
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = {"shared": False, "fPIC": True}
-
-    # Custom attributes for Bincrafters recipe conventions
     _source_subfolder = "source_subfolder"
     _build_subfolder = "build_subfolder"
 
     requires = ("glib/2.58.3@bincrafters/stable",)
     generators = "pkg_config"
+
+    def configure(self):
+        del self.settings.compiler.libcxx
 
     def config_options(self):
         if self.settings.os == 'Windows':
