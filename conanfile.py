@@ -63,6 +63,10 @@ class GStreamerConan(ConanFile):
                 defs["cpp_args"] = "-m64"
                 defs["c_link_args"] = "-m64"
                 defs["cpp_link_args"] = "-m64"
+        elif self.settings.compiler == "Visual Studio":
+            if int(str(self.settings.compiler.version)) < 14:
+                defs["c_args"] = "-Dsnprintf=_snprintf"
+                defs["cpp_args"] = "-Dsnprintf=_snprintf"
         defs["disable_examples"] = True
         meson.configure(build_folder=self._build_subfolder,
                         source_folder=self._source_subfolder,
