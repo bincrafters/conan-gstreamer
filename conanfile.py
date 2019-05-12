@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from conans import ConanFile, tools, Meson
+import glob
 import os
 import shutil
 
@@ -84,10 +85,21 @@ class GStreamerConan(ConanFile):
         meson = self._configure_meson()
         meson.build()
 
+    def _fix_library_names(self):
+        # regression in 1.16
+        if self.settings.compiler == "Visual Studio":
+            with tools.chdir(os.path.join(self.package_folder, "lib")):
+                for filename_old in glob.glob("*.a"):
+                    filename_new = filename_old[3:-2] + ".lib"
+                    self.output.info("rename %s into %s" % (filename_old, filename_new))
+                    shutil.move(filename_old, filename_new)
+
     def package(self):
         self.copy(pattern="LICENSE", dst="licenses", src=self._source_subfolder)
         meson = self._configure_meson()
         meson.install()
+
+        self._fix_library_names()
 
     def package_info(self):
         self.cpp_info.libs = ["gstreamer-1.0", "gstbase-1.0", "gstnet-1.0"]
