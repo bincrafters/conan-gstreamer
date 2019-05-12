@@ -92,3 +92,5 @@ class GStreamerConan(ConanFile):
     def package_info(self):
         self.cpp_info.libs = ["gstreamer-1.0", "gstbase-1.0", "gstnet-1.0"]
         self.cpp_info.includedirs = [os.path.join("include", "gstreamer-1.0")]
+        if self.settings.os == "Linux":
+            self.cpp_info.libs.append("dl")
