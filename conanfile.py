@@ -35,8 +35,8 @@ class GStreamerConan(ConanFile):
     def build_requirements(self):
         if not tools.which("meson"):
             self.build_requires("meson_installer/0.49.0@bincrafters/stable")
-        self.build_requires("bison/3.0.5@bincrafters/stable")
-        self.build_requires("flex/2.6.4@bincrafters/stable")
+        self.build_requires("bison_installer/3.3.2@bincrafters/stable")
+        self.build_requires("flex_installer/2.6.4@bincrafters/stable")
 
     def source(self):
         self.run("git clone https://gitlab.freedesktop.org/gstreamer/gstreamer.git --branch %s --depth 1" % self.version)
