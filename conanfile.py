@@ -106,3 +106,5 @@ class GStreamerConan(ConanFile):
         self.cpp_info.includedirs = [os.path.join("include", "gstreamer-1.0")]
         if self.settings.os == "Linux":
             self.cpp_info.libs.append("dl")
+        if not self.options.shared:
+            self.cpp_info.defines.append("GST_STATIC_COMPILATION")
