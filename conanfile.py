@@ -63,6 +63,7 @@ class GStreamerConan(ConanFile):
                 defs["cpp_args"] = "-m64"
                 defs["c_link_args"] = "-m64"
                 defs["cpp_link_args"] = "-m64"
+        defs["disable_examples"] = True
         meson.configure(build_folder=self._build_subfolder,
                         source_folder=self._source_subfolder,
                         pkg_config_paths=pkg_config_paths,
