@@ -35,7 +35,7 @@ class GStreamerConan(ConanFile):
 
     def build_requirements(self):
         if not tools.which("meson"):
-            self.build_requires("meson_installer/0.49.0@bincrafters/stable")
+            self.build_requires("meson_installer/0.50.0@bincrafters/stable")
         if not tools.which("pkg-config"):
             self.build_requires("pkg-config_installer/0.29.2@bincrafters/stable")
         self.build_requires("bison_installer/3.3.2@bincrafters/stable")
