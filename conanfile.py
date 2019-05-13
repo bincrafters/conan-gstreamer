@@ -76,6 +76,10 @@ class GStreamerConan(ConanFile):
             if int(str(self.settings.compiler.version)) < 14:
                 defs["c_args"] += " -Dsnprintf=_snprintf"
                 defs["cpp_args"] += " -Dsnprintf=_snprintf"
+        defs["tools"] = "disabled"
+        defs["examples"] = "disabled"
+        defs["benchmarks"] = "disabled"
+        defs["tests"] = "disabled"
         meson.configure(build_folder=self._build_subfolder,
                         source_folder=self._source_subfolder,
                         pkg_config_paths=pkg_config_paths,
