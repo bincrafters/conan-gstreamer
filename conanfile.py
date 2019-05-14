@@ -107,7 +107,6 @@ class GStreamerConan(ConanFile):
         self.copy(pattern="LICENSE", dst="licenses", src=self._source_subfolder)
         meson = self._configure_meson()
         meson.install()
-
         self._fix_library_names()
 
     def package_info(self):
