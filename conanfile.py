@@ -119,3 +119,12 @@ class GStreamerConan(ConanFile):
             self.cpp_info.libs.append("ws2_32")
         if not self.options.shared:
             self.cpp_info.defines.append("GST_STATIC_COMPILATION")
+        gstreamer_root = self.package_folder
+        self.output.info("Creating GSTREAMER_ROOT env var : %s" % gstreamer_root)
+        self.env_info.GSTREAMER_ROOT = gstreamer_root
+        if self.settings.arch == "x86":
+            self.output.info("Creating GSTREAMER_ROOT_X86 env var : %s" % gstreamer_root)
+            self.env_info.GSTREAMER_ROOT_X86 = gstreamer_root
+        elif self.settings.arch == "x86_64":
+            self.output.info("Creating GSTREAMER_ROOT_X86_64 env var : %s" % gstreamer_root)
+            self.env_info.GSTREAMER_ROOT_X86_64 = gstreamer_root
