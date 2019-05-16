@@ -43,8 +43,10 @@ class GStreamerConan(ConanFile):
         self.build_requires("flex_installer/2.6.4@bincrafters/stable")
 
     def source(self):
-        self.run("git clone https://gitlab.freedesktop.org/gstreamer/gstreamer.git --branch %s --depth 1" % self.version)
-        os.rename(self.name, self._source_subfolder)
+        source_url = "https://gitlab.freedesktop.org/gstreamer/{n}/-/archive/{v}/{n}-{v}.tar.bz2".format(v=self.version, n=self.name)
+        sha256 = "57dbb3df5781840ca45da6b011deda824e025b22684b5218f167d3a9f721cf3e"
+        tools.get(source_url, sha256=sha256)
+        os.rename("%s-%s" % (self.name, self.version), self._source_subfolder)
 
     def _apply_patches(self):
         for filename in sorted(glob.glob("patches/*.diff")):
@@ -53,7 +55,6 @@ class GStreamerConan(ConanFile):
 
     def _configure_meson(self):
         glib_pc = os.path.join(self.deps_cpp_info["glib"].rootpath, "lib", "pkgconfig")
-        print(glib_pc)
         pkg_config_paths = [glib_pc, self.source_folder]
         meson = Meson(self)
         defs = dict()
