@@ -60,8 +60,8 @@ class GStreamerConan(ConanFile):
             defs["libdir"] = "lib"
         if self.settings.compiler == "Visual Studio":
             if int(str(self.settings.compiler.version)) < 14:
-                defs["c_args"] += " -Dsnprintf=_snprintf"
-                defs["cpp_args"] += " -Dsnprintf=_snprintf"
+                defs["c_args"] = " -Dsnprintf=_snprintf"
+                defs["cpp_args"] = " -Dsnprintf=_snprintf"
         defs["tools"] = "disabled"
         defs["examples"] = "disabled"
         defs["benchmarks"] = "disabled"
