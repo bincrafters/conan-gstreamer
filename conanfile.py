@@ -121,6 +121,10 @@ class GStreamerConan(ConanFile):
         gstreamer_root = self.package_folder
         self.output.info("Creating GSTREAMER_ROOT env var : %s" % gstreamer_root)
         self.env_info.GSTREAMER_ROOT = gstreamer_root
+        gst_plugin_scanner = "gst-plugin-scanner.exe" if self.settings.os == "Windows" else "gst-plugin-scanner"
+        gst_plugin_scanner = os.path.join(self.package_folder, "bin", "gstreamer-1.0", gst_plugin_scanner)
+        self.output.info("Creating GST_PLUGIN_SCANNER env var : %s" % gst_plugin_scanner)
+        self.env_info.GST_PLUGIN_SCANNER = gst_plugin_scanner
         if self.settings.arch == "x86":
             self.output.info("Creating GSTREAMER_ROOT_X86 env var : %s" % gstreamer_root)
             self.env_info.GSTREAMER_ROOT_X86 = gstreamer_root
