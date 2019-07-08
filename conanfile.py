@@ -60,20 +60,7 @@ class GStreamerConan(ConanFile):
         defs = dict()
         if self.settings.os == "Linux":
             defs["libdir"] = "lib"
-        if str(self.settings.compiler) in ["gcc", "clang"]:
-            if self.settings.arch == "x86":
-                defs["c_args"] = "-m32"
-                defs["cpp_args"] = "-m32"
-                defs["c_link_args"] = "-m32"
-                defs["cpp_link_args"] = "-m32"
-            elif self.settings.arch == "x86_64":
-                defs["c_args"] = "-m64"
-                defs["cpp_args"] = "-m64"
-                defs["c_link_args"] = "-m64"
-                defs["cpp_link_args"] = "-m64"
-        elif self.settings.compiler == "Visual Studio":
-            defs["c_args"] = "-%s" % self.settings.compiler.runtime
-            defs["cpp_args"] = "-%s" % self.settings.compiler.runtime
+        if self.settings.compiler == "Visual Studio":
             if int(str(self.settings.compiler.version)) < 14:
                 defs["c_args"] += " -Dsnprintf=_snprintf"
                 defs["cpp_args"] += " -Dsnprintf=_snprintf"
