@@ -93,10 +93,10 @@ class GStreamerConan(ConanFile):
         meson = self._configure_meson()
         meson.build()
 
-    def _fix_library_names(self):
+    def _fix_library_names(self, path):
         # regression in 1.16
         if self.settings.compiler == "Visual Studio":
-            with tools.chdir(os.path.join(self.package_folder, "lib")):
+            with tools.chdir(path):
                 for filename_old in glob.glob("*.a"):
                     filename_new = filename_old[3:-2] + ".lib"
                     self.output.info("rename %s into %s" % (filename_old, filename_new))
@@ -107,11 +107,22 @@ class GStreamerConan(ConanFile):
         meson = self._configure_meson()
         meson.install()
 
-        self._fix_library_names()
+        self._fix_library_names(os.path.join(self.package_folder, "lib"))
+        self._fix_library_names(os.path.join(self.package_folder, "lib", "gstreamer-1.0"))
 
     def package_info(self):
         self.cpp_info.libs = ["gstreamer-1.0", "gstbase-1.0", "gstnet-1.0"]
         self.cpp_info.includedirs = [os.path.join("include", "gstreamer-1.0")]
+
+        gst_plugin_path = os.path.join(self.package_folder, "lib", "gstreamer-1.0")
+        if self.options.shared:
+            self.output.info("Appending GST_PLUGIN_PATH env var : %s" % gst_plugin_path)
+            self.env_info.GST_PLUGIN_PATH.append(gst_plugin_path)
+        else:
+            self.cpp_info.libdirs.append(gst_plugin_path)
+            self.cpp_info.libs.extend(["gstcoreelements",
+                                       "gstcoretracers"])
+
         if self.settings.os == "Linux":
             self.cpp_info.libs.append("dl")
         elif self.settings.os == "Windows":
