@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from conans import ConanFile, tools, Meson
+from conans import ConanFile, tools, Meson, VisualStudioBuildEnvironment
 import glob
 import os
 import shutil
@@ -26,6 +26,10 @@ class GStreamerConan(ConanFile):
 
     requires = ("glib/2.58.3@bincrafters/stable",)
     generators = "pkg_config"
+
+    @property
+    def _is_msvc(self):
+        return self.settings.compiler == "Visual Studio"
 
     def configure(self):
         del self.settings.compiler.libcxx
@@ -56,8 +60,6 @@ class GStreamerConan(ConanFile):
     def _configure_meson(self):
         meson = Meson(self)
         defs = dict()
-        if self.settings.os == "Linux":
-            defs["libdir"] = "lib"
         if self.settings.compiler == "Visual Studio":
             if int(str(self.settings.compiler.version)) < 14:
                 defs["c_args"] = " -Dsnprintf=_snprintf"
@@ -90,8 +92,9 @@ class GStreamerConan(ConanFile):
         if self.settings.os == "Linux":
             shutil.move("libmount.pc", "mount.pc")
         shutil.move("pcre.pc", "libpcre.pc")
-        meson = self._configure_meson()
-        meson.build()
+        with tools.environment_append(VisualStudioBuildEnvironment(self).vars) if self._is_msvc else tools.no_op():
+            meson = self._configure_meson()
+            meson.build()
 
     def _fix_library_names(self, path):
         # regression in 1.16
@@ -104,8 +107,9 @@ class GStreamerConan(ConanFile):
 
     def package(self):
         self.copy(pattern="LICENSE", dst="licenses", src=self._source_subfolder)
-        meson = self._configure_meson()
-        meson.install()
+        with tools.environment_append(VisualStudioBuildEnvironment(self).vars) if self._is_msvc else tools.no_op():
+            meson = self._configure_meson()
+            meson.install()
 
         self._fix_library_names(os.path.join(self.package_folder, "lib"))
         self._fix_library_names(os.path.join(self.package_folder, "lib", "gstreamer-1.0"))
