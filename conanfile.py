@@ -64,6 +64,8 @@ class GStreamerConan(ConanFile):
             if int(str(self.settings.compiler.version)) < 14:
                 defs["c_args"] = " -Dsnprintf=_snprintf"
                 defs["cpp_args"] = " -Dsnprintf=_snprintf"
+        if self.settings.get_safe("compiler.runtime"):
+            defs["b_vscrt"] = str(self.settings.compiler.runtime).lower()
         defs["tools"] = "disabled"
         defs["examples"] = "disabled"
         defs["benchmarks"] = "disabled"
