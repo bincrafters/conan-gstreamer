@@ -127,7 +127,7 @@ class GStreamerConan(ConanFile):
             self.cpp_info.libdirs.append(gst_plugin_path)
             self.cpp_info.libs.extend(["gstcoreelements",
                                        "gstcoretracers"])
-        self.cpp_info.libs.extend(["gstreamer-1.0", "gstbase-1.0", "gstnet-1.0"])
+        self.cpp_info.libs.extend(["gstreamer-1.0", "gstbase-1.0", "gstcontroller-1.0", "gstnet-1.0"])
 
         if self.settings.os == "Linux":
             self.cpp_info.libs.append("dl")
