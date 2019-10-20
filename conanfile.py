@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 from conans import ConanFile, tools, Meson, VisualStudioBuildEnvironment
 import glob
 import os
@@ -33,6 +30,7 @@ class GStreamerConan(ConanFile):
 
     def configure(self):
         del self.settings.compiler.libcxx
+        del self.settings.compiler.cppstd
 
     def config_options(self):
         if self.settings.os == 'Windows':
