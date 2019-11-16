@@ -11,7 +11,6 @@ class GStreamerConan(ConanFile):
     topics = ("conan", "gstreamer", "multimedia", "video", "audio", "broadcasting", "framework", "media")
     url = "https://github.com/bincrafters/conan-gstreamer"
     homepage = "https://gstreamer.freedesktop.org/"
-    author = "Bincrafters <bincrafters@gmail.com>"
     license = "GPL-2.0-only"
     exports = ["LICENSE.md"]
     settings = "os", "arch", "compiler", "build_type"
@@ -38,7 +37,7 @@ class GStreamerConan(ConanFile):
 
     def build_requirements(self):
         if not tools.which("meson"):
-            self.build_requires("meson_installer/0.50.0@bincrafters/stable")
+            self.build_requires("meson/0.52.0")
         if not tools.which("pkg-config"):
             self.build_requires("pkg-config_installer/0.29.2@bincrafters/stable")
         self.build_requires("bison_installer/3.3.2@bincrafters/stable")
