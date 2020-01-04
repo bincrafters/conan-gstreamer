@@ -88,7 +88,6 @@ class GStreamerConan(ConanFile):
     def build(self):
         self._apply_patches()
         self._copy_pkg_config("glib")
-        shutil.move("pcre.pc", "libpcre.pc")
         with tools.environment_append(VisualStudioBuildEnvironment(self).vars) if self._is_msvc else tools.no_op():
             meson = self._configure_meson()
             meson.build()
