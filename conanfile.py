@@ -20,7 +20,7 @@ class GStreamerConan(ConanFile):
     _build_subfolder = "build_subfolder"
     exports_sources = ["patches/*.diff"]
 
-    requires = ("glib/2.58.3@bincrafters/stable",)
+    requires = ("glib/2.64.0@bincrafters/stable",)
     generators = "pkg_config"
 
     @property
