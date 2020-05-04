@@ -12,7 +12,6 @@ class GStreamerConan(ConanFile):
     url = "https://github.com/bincrafters/conan-gstreamer"
     homepage = "https://gstreamer.freedesktop.org/"
     license = "GPL-2.0-only"
-    exports = ["LICENSE.md"]
     settings = "os", "arch", "compiler", "build_type"
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = {"shared": True, "fPIC": True}
@@ -34,19 +33,10 @@ class GStreamerConan(ConanFile):
     def config_options(self):
         if self.settings.os == 'Windows':
             del self.options.fPIC
-    
-    @property
-    def _meson_required(self):
-        from six import StringIO 
-        mybuf = StringIO()
-        if self.run("meson -v", output=mybuf, ignore_errors=True) != 0:
-            return True
-        return tools.Version(mybuf.getvalue()) < tools.Version('0.53.0')
 
     def build_requirements(self):
-        if self._meson_required:
-            self.build_requires("meson/0.53.0")
-        if not tools.which("pkg-config"):
+        self.build_requires("meson/0.54.0")
+        if not tools.which("pkg-config") or self.settings.os == "Windows":
             self.build_requires("pkg-config_installer/0.29.2@bincrafters/stable")
         self.build_requires("bison_installer/3.3.2@bincrafters/stable")
         self.build_requires("flex_installer/2.6.4@bincrafters/stable")
@@ -77,7 +67,7 @@ class GStreamerConan(ConanFile):
         defs["tests"] = "disabled"
         meson.configure(build_folder=self._build_subfolder,
                         source_folder=self._source_subfolder,
-                        defs=defs)
+                        defs=defs, args=['--wrap-mode=nofallback'])
         return meson
 
     def _copy_pkg_config(self, name):
