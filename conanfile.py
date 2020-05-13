@@ -35,7 +35,7 @@ class GStreamerConan(ConanFile):
             del self.options.fPIC
 
     def build_requirements(self):
-        self.build_requires("meson/0.54.0")
+        self.build_requires("meson/0.54.1")
         if not tools.which("pkg-config") or self.settings.os == "Windows":
             self.build_requires("pkg-config_installer/0.29.2@bincrafters/stable")
         self.build_requires("bison_installer/3.3.2@bincrafters/stable")
