@@ -38,8 +38,11 @@ class GStreamerConan(ConanFile):
         self.build_requires("meson/0.54.2")
         if not tools.which("pkg-config") or self.settings.os == "Windows":
             self.build_requires("pkgconf/1.7.3")
-        self.build_requires("bison/3.5.3")
-        self.build_requires("flex/2.6.4")
+        if self.settings.os == 'Windows':
+            self.build_requires("winflexbison/2.5.22")
+        else:
+            self.build_requires("bison/3.5.3")
+            self.build_requires("flex/2.6.4")
 
     def source(self):
         source_url = "https://gitlab.freedesktop.org/gstreamer/{n}/-/archive/{v}/{n}-{v}.tar.bz2".format(v=self.version, n=self.name)
